@@ -86,6 +86,8 @@ public function make_episode_private($id)
      */    
     public function streamEpisode($episode_id)
     {
+            // Log user and role information
+    \Log::info('User ID: ' . auth()->id() . ', Role: ' . auth()->user()->role);
         // Find the episode
         $episode = Episode::findOrFail($episode_id);
     
@@ -113,5 +115,4 @@ public function make_episode_private($id)
     
         return $streamResponse;
     }
-    
 }

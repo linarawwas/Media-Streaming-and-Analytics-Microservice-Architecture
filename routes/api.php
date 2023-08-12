@@ -27,9 +27,10 @@ Route::controller(EpisodeController::class)->group(function () {
         Route::get('/get-signed-url/{episode_id}','getSignedUrl'); 
         // Get information about all episodes
         Route::get('/episodes', 'getAllEpisodes');
+        // Public Media Streaming Service for all Visitors prior to logging In/ register: 
+        Route::get('/stream-episode/{episode_id}','streamEpisode');
     });
-    // Public Media Streaming Service for all Visitors prior to logging In/ register: 
-    Route::get('/stream-episode/{episode_id}','streamEpisode');
+
     });
 
     Route::controller(StreamLogController::class)->group(function () {
