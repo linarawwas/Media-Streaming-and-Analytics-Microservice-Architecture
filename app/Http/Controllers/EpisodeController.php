@@ -1,10 +1,9 @@
 <?php
+
 namespace App\Http\Controllers;
-use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Episode;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Http\Controllers\StreamLogController;
 class EpisodeController extends Controller
@@ -88,8 +87,6 @@ public function make_episode_private($id)
      */    
     public function streamEpisode($episode_id)
     {
-            // Log user and role information
-    \Log::info('User ID: ' . auth()->id() . ', Role: ' . auth()->user()->role);
         // Find the episode
         $episode = Episode::findOrFail($episode_id);
     
@@ -101,14 +98,23 @@ public function make_episode_private($id)
             return response()->json(['error' => 'Private episode, authentication required'], 401);
         }
     
-        // If the user is authenticated, log the stream
-        if (auth()->check()) {
-            $this->streamLogController->logStream(auth()->user(), $episode);
+        // Cache key for the episode content
+        $cacheKey = 'episode_' . $episode_id;
+    
+        // Check if the episode content is cached
+        if (!Cache::has($cacheKey)) {
+            // Fetch the episode content from the URL
+            $episodeContent = file_get_contents($mp3Url);
+            
+            // Store the episode content in the cache for an hour
+            Cache::put($cacheKey, $episodeContent, now()->addHour());
         }
-        
+    
         // Create the StreamedResponse
-        $streamResponse = new StreamedResponse(function () use ($mp3Url) {
-            readfile($mp3Url);
+        $streamResponse = new StreamedResponse(function () use ($cacheKey) {
+            // Get the episode content from the cache and stream it
+            $episodeContent = Cache::get($cacheKey);
+            echo $episodeContent;
         });
     
         // Set the content headers
@@ -117,4 +123,5 @@ public function make_episode_private($id)
     
         return $streamResponse;
     }
+    
 }
