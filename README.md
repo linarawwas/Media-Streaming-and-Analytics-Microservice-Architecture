@@ -1,3 +1,6 @@
+Media Streaming and Analytics Microservice Architecture
+
+
 This is An asignment i made while applying for a Mid-Senior Backend Position at Podeo, the prompt of the asignment included making 2 microservices with various API endpoints for specific purposes.
 
 The following requirements are all applied in the application.
