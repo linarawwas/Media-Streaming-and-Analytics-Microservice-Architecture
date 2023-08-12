@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use App\Models\Episode;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
 class EpisodeController extends Controller
 {
     /**
@@ -61,29 +63,6 @@ public function make_episode_private($id)
 
     return response()->json(['message' => 'Episode marked as private', 'episode' => $episode], 200);
 }
-    /**
-     * Get a signed URL for a private episode with a maximum time to live of 1 hour.
-     *
-     * @param  int  $episode_id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getSignedUrl($episode_id)
-    {
-        $episode = Episode::findOrFail($episode_id);
-    
-        if ($episode->status !== 'private') {
-            return response()->json(['error' => 'Episode is not private'], 400);
-        }
-    
-        // Generate a signed URL with a 1-hour expiration time
-        $url = Storage::disk('s3')->temporaryUrl(
-            $episode->mp3_url,
-            now()->addHour(),
-            ['ResponseContentDisposition' => 'attachment; filename=' . $episode->mp3_url]
-        );
-    
-        return response()->json(['signed_url' => $url], 200);
-    }
         /**
      * Get information about all episodes.
      *
@@ -95,4 +74,40 @@ public function make_episode_private($id)
 
         return response()->json(['episodes' => $episodes], 200);
     }
+    /**
+     * Stream an episode.
+     *
+     * @param  int  $episode_id
+     * @return mixed
+     */    
+    public function streamEpisode($episode_id)
+    {
+        // Find the episode
+        $episode = Episode::findOrFail($episode_id);
+    
+        // Get the episode's MP3 URL
+        $mp3Url = $episode->mp3_url;
+    
+        // Check if the episode is private and the user is not authenticated
+        if ($episode->status === 'private' && !auth()->check()) {
+            return response()->json(['error' => 'Private episode, authentication required'], 401);
+        }
+    
+        // If the user is authenticated, log the stream
+        if (auth()->check()) {
+            app(StreamLogController::class)->logStream(request(), $episode);
+        }
+    
+        // Create the StreamedResponse
+        $streamResponse = new StreamedResponse(function () use ($mp3Url) {
+            readfile($mp3Url);
+        });
+    
+        // Set the content headers
+        $streamResponse->headers->set('Content-Type', 'audio/mpeg');
+        $streamResponse->headers->set('Content-Disposition', 'inline; filename="episode.mp3"');
+    
+        return $streamResponse;
+    }
+    
 }

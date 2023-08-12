@@ -9,15 +9,9 @@ class CreateStreamLogsTable extends Migration
     {
         Schema::create('stream_logs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('episode_id');
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->timestamp('timestamp');
-            // Add other logging fields as needed
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('episode_id')->constrained();
             $table->timestamps();
-
-            // Add foreign key constraint
-            $table->foreign('episode_id')->references('id')->on('episodes');
-            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
