@@ -32,6 +32,7 @@ multiple times.
 d. The service should call the analytics service API endpoint to add an entry in the
 database that this episode was requested, the call should be authenticated
 and in a fire-and-forget methodology.
+----
 II. Analytics Service:
 This internally accessible service is designed to take heavy loads of API calls to store analytics
 information in the database for every episode that is streamed through the Media service
