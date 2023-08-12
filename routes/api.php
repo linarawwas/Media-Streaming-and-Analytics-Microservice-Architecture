@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\EpisodeController;
+use App\Http\Controllers\StreamLogController;
 use App\Http\Controllers\UserController;
 
 Route::controller(AuthController::class)->group(function () {
@@ -35,7 +36,7 @@ Route::controller(EpisodeController::class)->group(function () {
     // authenticated routes: 
         Route::group(['middleware' => 'auth:sanctum'], function () {
     // for the Stream Logs and Analytics Service:
-        
+
         //  View All Logs of All Episodes
         Route::get('/stream-logs', 'getAllLogs');
         // View All Logs of a Specific Episode

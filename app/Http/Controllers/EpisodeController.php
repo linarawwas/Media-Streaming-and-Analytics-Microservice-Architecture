@@ -6,9 +6,13 @@ use App\Models\Episode;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-
+use App\Http\Controllers\StreamLogController;
 class EpisodeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('admin')->only(['getAllEpisodes']);
+    }
     /**
      * Add an episode to the database.
      *
