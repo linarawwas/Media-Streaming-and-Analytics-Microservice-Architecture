@@ -1,67 +1,48 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+This is An asignment i made while applying for a Mid-Senior Backend Position at Podeo, the prompt of the asignment included making 2 microservices with various API endpoints for specific purposes.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+The following requirements are all applied in the application.
 
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# Mp3-streaming-service
+I. Media Streaming Microservice:
+This publicly accessible service is designed to stream an audio MP3 file to users upon
+accessing a specific URL corresponding to the desired audio episode. Certain episodes may
+be set as private, requiring authentication for streaming, which can be achieved either
+through header authentication or via a signed URL.
+Deliverables:
+1. Exposing the following endpoints through a REST API, with the APIs being secured using
+token authentication
+a. An Endpoint to add an episode to the database has:
+i. MP3 URL: The URL of the file that will be streamed through the media
+service
+ii. Name: The name of the episode
+iii. Author: The name of the author of the episode
+b. An Endpoint to flag an episode as private. A Private episode can only be
+streamed through an authenticated route or with a signed URL.
+i. This endpoint should be secured for only admin-level authentication.
+c. An Endpoint to get a signed URL for a private episode. The signed URL should
+have a maximum time to live of 1 hour from the time of creation.
+2. Exposing a URL path to be able to stream an mp3 file(The path should stream the file
+rather than just serving it to the user. The Service should read the file and stream it
+back to the user)
+a. The route should take into account authentication headers or a signed URL to
+stream private episodes.
+b. If the episode is flagged as private and no authentication method is provided
+(Header token OR Signed URL) an error should be returned to the user.
+c. The service should cache the files into local storage if an episode is requested
+multiple times.
+d. The service should call the analytics service API endpoint to add an entry in the
+database that this episode was requested, the call should be authenticated
+and in a fire-and-forget methodology.
+II. Analytics Service:
+This internally accessible service is designed to take heavy loads of API calls to store analytics
+information in the database for every episode that is streamed through the Media service
+Deliverables:
+1. Exposing the following endpoints through a REST API, with the APIs being secured using
+token authentication.
+a. An Endpoint to add stream logs into the database, the logs are up to you to
+add what seems fit as streaming logs of audio/episode files.
+b. The Service should insure no data is lost due to high traffic, the service should
+implement any kind of event or queuing mechanism to ensure all data is
+stored in the appropriate databases.
+Containerization:
+The services should be dockerized utilizing a docker file that insures a functioning service by
+just deploying the docker file.
