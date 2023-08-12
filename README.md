@@ -1,7 +1,7 @@
 This is An asignment i made while applying for a Mid-Senior Backend Position at Podeo, the prompt of the asignment included making 2 microservices with various API endpoints for specific purposes.
 
 The following requirements are all applied in the application.
-
+---
 I. Media Streaming Microservice:
 This publicly accessible service is designed to stream an audio MP3 file to users upon
 accessing a specific URL corresponding to the desired audio episode. Certain episodes may
@@ -44,6 +44,7 @@ add what seems fit as streaming logs of audio/episode files.
 b. The Service should insure no data is lost due to high traffic, the service should
 implement any kind of event or queuing mechanism to ensure all data is
 stored in the appropriate databases.
+---
 Containerization:
 The services should be dockerized utilizing a docker file that insures a functioning service by
 just deploying the docker file.
