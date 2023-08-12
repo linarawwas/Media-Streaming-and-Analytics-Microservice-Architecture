@@ -33,16 +33,13 @@ Route::controller(EpisodeController::class)->group(function () {
 
     });
 
-    Route::controller(StreamLogController::class)->group(function () {
-    // authenticated routes: 
-        Route::group(['middleware' => 'auth:sanctum'], function () {
-    // for the Stream Logs and Analytics Service:
-
-        //  View All Logs of All Episodes
-        Route::get('/stream-logs', 'getAllLogs');
+    Route::middleware(['auth:sanctum'])->group(function () {
+        // View All Logs of All Episodes
+        Route::get('/stream-logs', [StreamLogController::class, 'getAllLogs']);
+    
         // View All Logs of a Specific Episode
-        Route::get('/episode/{episode_id}/stream-logs', 'getEpisodeLogs');
+        Route::get('/episode/{episode_id}/stream-logs', [StreamLogController::class, 'getEpisodeLogs']);
+    
         // View All Logs of Authenticated User's Episodes
-        Route::get('/user/stream-logs', 'getUserLogs');
-});
-});
+        Route::get('/user/stream-logs', [StreamLogController::class, 'getUserLogs']);
+    });

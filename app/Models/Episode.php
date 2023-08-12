@@ -23,4 +23,9 @@ class Episode extends Model
     protected $casts = [
         'status' => 'string',
     ];
+    public function streamLogs()
+    {
+        return $this->hasMany(StreamLog::class);
+    }
+
 }

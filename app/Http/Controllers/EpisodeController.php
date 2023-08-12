@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Episode;
 use Carbon\Carbon;
@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Http\Controllers\StreamLogController;
 class EpisodeController extends Controller
-{
-    public function __construct()
+{ protected $streamLogController;
+
+    public function __construct(StreamLogController $streamLogController)
     {
         $this->middleware('admin')->only(['getAllEpisodes']);
+        $this->streamLogController = $streamLogController;
     }
     /**
      * Add an episode to the database.
@@ -101,9 +103,9 @@ public function make_episode_private($id)
     
         // If the user is authenticated, log the stream
         if (auth()->check()) {
-            app(StreamLogController::class)->logStream(request(), $episode);
+            $this->streamLogController->logStream(auth()->user(), $episode);
         }
-    
+        
         // Create the StreamedResponse
         $streamResponse = new StreamedResponse(function () use ($mp3Url) {
             readfile($mp3Url);

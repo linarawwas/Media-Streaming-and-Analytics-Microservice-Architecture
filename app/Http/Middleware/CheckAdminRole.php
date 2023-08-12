@@ -12,6 +12,6 @@ class CheckAdminRole
             return $next($request);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 403);
+        return response()->json(['error' => 'Unauthorized. Only admins are allowed to access this resource.'], 403);
     }
 }

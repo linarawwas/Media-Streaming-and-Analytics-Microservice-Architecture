@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Episode;
 use App\Models\StreamLog;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class StreamLogController extends Controller
@@ -11,33 +13,40 @@ class StreamLogController extends Controller
     {
         $this->middleware('admin')->only(['getEpisodeLogs', 'getAllLogs']);
     }
-    public function logStream(Request $request, Episode $episode)
+    public function logStream(User $user, Episode $episode)
     {
-        // Create a stream log entry
-        StreamLog::create([
-            'user_id' => auth()->id(),
+        // Create a stream log entry and associate it with the user and episode
+        $streamLog = StreamLog::create([
+            'user_id' => $user->id,
             'episode_id' => $episode->id,
         ]);
-
+    
         return response()->json(['message' => 'Stream logged successfully']);
     }
+    
+    
+    
+    
     public function getAllLogs()
     {
         $logs = StreamLog::with('user', 'episode')->get();
 
         return response()->json(['logs' => $logs]);
     }
+
     public function getEpisodeLogs($episode_id)
     {
         $episode = Episode::findOrFail($episode_id);
-        $logs = StreamLog::where('episode_id', $episode->id)->with('user', 'episode')->get();
+        $logs = $episode->streamLogs()->with('user', 'episode')->get();
 
         return response()->json(['logs' => $logs]);
     }
+
     public function getUserLogs()
     {
         $user = auth()->user();
-        $logs = StreamLog::where('user_id', $user->id)->with('user', 'episode')->get();
+
+        $logs = $user->streamLogs()->with('user', 'episode')->get();
 
         return response()->json(['logs' => $logs]);
     }
