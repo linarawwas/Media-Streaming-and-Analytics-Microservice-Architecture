@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Episode;
 use App\Models\StreamLog;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Jobs\CreateStreamLog;
 
 class StreamLogController extends Controller
 {
@@ -15,18 +15,11 @@ class StreamLogController extends Controller
     }
     public function logStream(User $user, Episode $episode)
     {
-        // Create a stream log entry and associate it with the user and episode
-        $streamLog = StreamLog::create([
-            'user_id' => $user->id,
-            'episode_id' => $episode->id,
-        ]);
-    
-        return response()->json(['message' => 'Stream logged successfully']);
+        // Dispatch the CreateStreamLog job to create the stream log entry
+        CreateStreamLog::dispatch($user, $episode);
+
+        return response()->json(['message' => 'Stream log creation dispatched']);
     }
-    
-    
-    
-    
     public function getAllLogs()
     {
         $logs = StreamLog::with('user', 'episode')->get();

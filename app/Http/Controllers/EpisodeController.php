@@ -6,6 +6,7 @@ use App\Models\Episode;
 use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Http\Controllers\StreamLogController;
+use App\Jobs\CreateStreamLog;
 class EpisodeController extends Controller
 { protected $streamLogController;
 
@@ -110,6 +111,11 @@ public function make_episode_private($id)
             Cache::put($cacheKey, $episodeContent, now()->addHour());
         }
     
+        // Dispatch the CreateStreamLog job to handle logging asynchronously
+        if (auth()->check()) {
+            CreateStreamLog::dispatch(auth()->user(), $episode)->onQueue('stream_logs');
+        }
+    
         // Create the StreamedResponse
         $streamResponse = new StreamedResponse(function () use ($cacheKey) {
             // Get the episode content from the cache and stream it
@@ -123,5 +129,5 @@ public function make_episode_private($id)
     
         return $streamResponse;
     }
-    
+
 }
